@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Мій кабінет</h1>
+<a href="/quiz/create/" class="btn btn-primary">Створити вікторину</a>
+<ul>
+    {% for quiz in quizzes %}
+        <li><a href="/quiz/{{ quiz.id }}/">{{ quiz.title }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}

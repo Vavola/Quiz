@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Пройти вікторину: {{ quiz.title }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% for question in quiz.questions.all|dictsort:"order" %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    Питання {{ forloop.counter }} (Час: {{ question.time_limit }} сек.)
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ question.text }}</p>
+                    {% if question.photo %}
+                        <img src="{{ question.photo.url }}" class="img-fluid mb-2" alt="Фото">
+                    {% endif %}
+                    {% for answer in question.answers.all %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="{{ question.id }}" id="answer{{ answer.id }}" value="{{ answer.text }}">
+                            <label class="form-check-label" for="answer{{ answer.id }}">
+                                {{ answer.text }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Відправити відповіді</button>
+    </form>
+</div>
+{% endblock %}

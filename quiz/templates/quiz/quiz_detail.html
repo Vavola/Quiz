@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ quiz.title }}</h2>
+    <p>{{ quiz.description }}</p>
+    <p>Загальний таймер: {{ quiz.total_timer }} сек.</p>
+    <h4>Питання:</h4>
+    <ul class="list-group">
+        {% for question in quiz.questions.all|dictsort:"order" %}
+            <li class="list-group-item">
+                <p>{{ question.text }}</p>
+                {% if question.photo %}
+                    <img src="{{ question.photo.url }}" alt="Фото" class="img-fluid">
+                {% endif %}
+                <ul>
+                    {% for answer in question.answers.all %}
+                        <li>{{ answer.text }} {% if answer.is_correct %}(правильна){% endif %}</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% empty %}
+            <li class="list-group-item">Питань немає</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'play_quiz' quiz.pk %}" class="btn btn-primary mt-3">Пройти вікторину</a>
+</div>
+{% endblock %}

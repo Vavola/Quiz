@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Крок 1: Загальна інформація про вікторину</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        {{ wizard.form.as_p }}
+        <button type="submit" class="btn btn-primary">Далі</button>
+    </form>
+</div>
+{% endblock %}

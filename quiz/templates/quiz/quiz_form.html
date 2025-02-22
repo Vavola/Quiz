@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Створення нової вікторини</h2>
+    <form method="post" enctype="multipart/form-data" id="quizForm">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ quiz_form.title.label_tag }} 
+            {{ quiz_form.title }}
+        </div>
+        <div class="mb-3">
+            {{ quiz_form.description.label_tag }} 
+            {{ quiz_form.description }}
+        </div>
+        <div class="mb-3">
+            {{ quiz_form.total_timer.label_tag }} 
+            {{ quiz_form.total_timer }}
+        </div>
+        <div class="mb-3">
+            {{ quiz_form.question_count.label_tag }} 
+            {{ quiz_form.question_count }}
+        </div>
+        <div class="mb-3">
+            {{ quiz_form.logo.label_tag }} 
+            {{ quiz_form.logo }}
+        </div>
+        <hr>
+        <h4>Питання</h4>
+        <div id="questions-container">
+            <!-- Динамічно додаватимуться форми для питань -->
+        </div>
+        <button type="button" class="btn btn-secondary mb-3" id="addQuestionBtn">Додати питання</button>
+        <br>
+        <button type="submit" class="btn btn-success">Створити вікторину</button>
+    </form>
+</div>
+
+<script>
+    let questionIndex = 0;
+    document.getElementById('addQuestionBtn').addEventListener('click', function() {
+        questionIndex++;
+        const container = document.getElementById('questions-container');
+        const questionDiv = document.createElement('div');
+        questionDiv.classList.add('card', 'mb-3');
+        questionDiv.innerHTML = `
+            <div class="card-header">Питання ${questionIndex}</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label>Текст питання</label>
+                    <textarea name="question_${questionIndex}_text" class="form-control" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label>Час для відповіді (секунди)</label>
+                    <input type="number" name="question_${questionIndex}_time_limit" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label>Фото (опціонально)</label>
+                    <input type="file" name="question_${questionIndex}_photo" class="form-control">
+                </div>
+                <h5>Варіанти відповідей</h5>
+                <div id="question_${questionIndex}_answers">
+                    <!-- Динамічно додаватимуться варіанти відповіді -->
+                </div>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="addAnswer(${questionIndex})">Додати варіант відповіді</button>
+            </div>
+        `;
+        container.appendChild(questionDiv);
+    });
+
+    function addAnswer(qIndex) {
+        const container = document.getElementById(`question_${qIndex}_answers`);
+        const answerCount = container.childElementCount + 1;
+        if (answerCount > 6) {
+            alert("Максимум 6 варіантів відповіді");
+            return;
+        }
+        const answerDiv = document.createElement('div');
+        answerDiv.classList.add('mb-2');
+        answerDiv.innerHTML = `
+            <input type="text" name="question_${qIndex}_answer_${answerCount}" placeholder="Текст відповіді" class="form-control d-inline-block" style="width:70%;" required>
+            <label class="form-check-label ms-2">
+                <input type="checkbox" name="question_${qIndex}_answer_${answerCount}_is_correct" class="form-check-input"> Правильна
+            </label>
+        `;
+        container.appendChild(answerDiv);
+    }
+</script>
+{% endblock %}

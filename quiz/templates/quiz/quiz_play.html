@@ -1,0 +1,51 @@
+<!-- templates/quiz/quiz_play.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ quiz.title }}</h1>
+    <p>Код гри: <strong>{{ quiz.game_pin }}</strong></p>
+    <div id="question-area">
+        <!-- Поточне питання завантажуватиметься через WebSocket -->
+    </div>
+    <!-- Приклад: кнопки для відповіді, які можна стилізувати за допомогою Bootstrap -->
+    <div id="answers-area" class="mt-3">
+        <button class="btn btn-primary" onclick="sendAnswer('A')">A</button>
+        <button class="btn btn-primary" onclick="sendAnswer('B')">B</button>
+        <button class="btn btn-primary" onclick="sendAnswer('C')">C</button>
+        <button class="btn btn-primary" onclick="sendAnswer('D')">D</button>
+    </div>
+</div>
+
+<script>
+    const gamePin = "{{ quiz.game_pin }}";
+    const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+    const socket = new WebSocket(wsScheme + '://' + window.location.host + '/ws/quiz/' + gamePin + '/');
+
+    socket.onopen = function(e) {
+        console.log("Connected to quiz session");
+    };
+
+    socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        if (data.type === 'question') {
+            // Оновлюємо область питання (очікуємо, що сервер надішле об'єкт питання)
+            document.getElementById('question-area').innerHTML = '<h2>' + data.question.text + '</h2>';
+        } else if (data.type === 'answer') {
+            // Можна оновити результати або повідомити про отриману відповідь
+            console.log("Answer from " + data.user + ": " + data.answer);
+        }
+    };
+
+    socket.onclose = function(e) {
+        console.error("Socket closed unexpectedly");
+    };
+
+    function sendAnswer(answer) {
+        socket.send(JSON.stringify({
+            'type': 'answer',
+            'answer': answer
+        }));
+    }
+</script>
+{% endblock %}

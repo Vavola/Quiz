@@ -1,9 +1,0 @@
-{% extends 'base.html' %}
-{% block content %}
-<h1>Доступні вікторини</h1>
-<ul>
-    {% for quiz in quizzes %}
-        <li><a href="/quiz/{{ quiz.id }}/">{{ quiz.title }}</a></li>
-    {% endfor %}
-</ul>
-{% endblock %}
